@@ -38,8 +38,8 @@ def filter_server():
 
 @app.route('/load_data/')
 def loading():
-    file = open('source/test.txt', 'r', encoding='utf-8')
-    total_line_number = count_file_lines('source/test.txt')
+    file = open('source/2600w.txt', 'r', encoding='utf-8')
+    total_line_number = count_file_lines('source/2600w.txt')
     percent_number = int(total_line_number / 1000)
     temp = 1
     percent = 0
@@ -80,7 +80,7 @@ def result_handler():
     data = request.get_data()
     json_data = json.loads(data.decode("utf-8"))
     emails = json_data.get('emails')
-    result = open('results.txt', 'a+', encoding='utf-8')
+    result = open('result.txt', 'a+', encoding='utf-8')
     for line in emails:
         result.write(line + '\n')
     result.close()
