@@ -38,6 +38,7 @@ def filter_server():
 
 @app.route('/load_data/')
 def loading():
+    # 读取文件
     file = open('source/2600w.txt', 'r', encoding='utf-8')
     total_line_number = count_file_lines('source/2600w.txt')
     percent_number = int(total_line_number / 1000)
@@ -61,7 +62,7 @@ def loading():
         temp += 1
     with redis_client.pipeline(transaction=False) as p:
         for d in temp_data:
-            p.lpush('email_data', d)
+            p.sadd('emails_data', d)
         p.execute()
     socket.emit(event='loading', data={'percent': 100})
     redis_client.set('start_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -69,6 +70,44 @@ def loading():
     redis_client.set('filter_number', 0)
     redis_client.set('success_number', 0)
     redis_client.set('total_line_number', total_line_number)
+    return jsonify({
+        'status': 'success',
+        'count': temp
+    })
+
+
+@app.route('/load_random_data_six_qq/')
+def load_random_data():
+    percent_number = 1000
+    redis_client.flushall()
+    socket.emit(event='loading', data={'percent': 0})
+    temp = 0
+    percent = 0
+    temp_data = []
+    for line in range(100000, 1000000):
+        temp_data.append(str(line) + '@qq.com')
+        if temp % percent_number == 0:
+            with redis_client.pipeline(transaction=False) as p:
+                for d in temp_data:
+                    p.sadd('emails_data', d)
+                p.execute()
+            temp_data = list()
+            percent = percent + 0.1
+            redis_client.set('task_number', redis_client.scard('emails_data'))
+            socket.emit(event='loading', data={'percent': '%.2f%%' % percent})
+            socket.emit(event='task_number', data={'task_number': redis_client.scard('emails_data')})
+        temp += 1
+    with redis_client.pipeline(transaction=False) as p:
+        for d in temp_data:
+            p.sadd('emails_data', d)
+        p.execute()
+    socket.emit(event='loading', data={'percent': 100})
+    socket.emit(event='task_number', data={'task_number': redis_client.scard('emails_data')})
+    redis_client.set('start_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    redis_client.set('task_number', redis_client.scard('emails_data'))
+    redis_client.set('filter_number', 0)
+    redis_client.set('success_number', 0)
+    redis_client.set('total_line_number', 1000000)
     return jsonify({
         'status': 'success',
         'count': temp

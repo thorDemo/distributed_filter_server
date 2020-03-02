@@ -1113,9 +1113,14 @@
                     <li class="crumb-trail">仪表板</li>
                 </ol>
             </div>
+{#            <div class="topbar-left" style="width: 200px; float: left; height: 31px">#}
+{#                <div class="">#}
+{#                    <button type="button" class="btn btn-success btn-gradient dark btn-block" onclick="loading_data()" id="load_b">载入数据</button>#}
+{#                </div>#}
+{#            </div>#}
             <div class="topbar-left" style="width: 200px; float: left; height: 31px">
                 <div class="">
-                    <button type="button" class="btn btn-success btn-gradient dark btn-block" onclick="loading_data()" id="load">载入数据</button>
+                    <button type="button" class="btn btn-success btn-gradient dark btn-block" onclick="load_random_data_six_qq()" id="load">载入QQ数据</button>
                 </div>
             </div>
             <div class="topbar-right">
@@ -1263,7 +1268,7 @@
                                                                     <i class="fa fa-circle text-warning fs8 pr15"></i>
                                                                     <span>2600w 淘宝数据</span>
                                                                 </td>
-                                                                <td id="finish-percent">0%</td>
+                                                                <td >100%</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
@@ -1277,7 +1282,7 @@
                                                                     <i class="fa fa-circle text-warning fs8 pr15"></i>
                                                                     <span>7 位数QQ任务</span>
                                                                 </td>
-                                                                <td>0%</td>
+                                                                <td id="finish-percent">0%</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
@@ -1962,6 +1967,26 @@
             error: function () {
                 $('#task-total-number').text('error');
                 l.text('载入失败');
+                l.removeClass('btn-warning');
+                l.addClass('btn-danger');
+            }
+        })
+    }
+    function load_random_data_six_qq() {
+        var l = $('#load');
+        l.removeClass('btn-success');
+        l.addClass('btn-warning');
+        $.ajax({
+            'url': '/load_random_data_six_qq/',
+            success: function (data) {
+                $('#task-total-number').text(data['task_total_number']);
+                l.text('载入QQ成功');
+                l.removeClass('btn-warning');
+                l.addClass('btn-success');
+            },
+            error: function () {
+                $('#task-total-number').text('error');
+                l.text('载入QQ失败');
                 l.removeClass('btn-warning');
                 l.addClass('btn-danger');
             }
