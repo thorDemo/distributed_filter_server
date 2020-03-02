@@ -79,7 +79,7 @@ def loading():
 @app.route('/load_random_data_six_qq/')
 def load_random_data():
     percent_number = 1000
-    redis_client.flushall()
+    redis_client.flushdb()
     socket.emit(event='loading', data={'percent': 0})
     temp = 0
     percent = 0
