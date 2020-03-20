@@ -26,7 +26,7 @@ def filter_index():
     # 已完成总量
     filter_finish = int(redis_client.get('task_number')) - int(redis_client.scard('emails_data'))
     # 任务总量
-    task_total_number = int(redis_client.scard('task_number'))
+    task_total_number = int(redis_client.scard('emails_data'))
     # 开始时间
     start_time = datetime.strptime(redis_client.get('start_time'), '%Y-%m-%d %H:%M:%S')
     now_time = datetime.now()
@@ -159,7 +159,7 @@ def result_handler():
     # 已完成总量
     filter_finish = int(redis_client.get('task_number')) - int(redis_client.scard('emails_data'))
     # 任务总量
-    task_total_number = int(redis_client.scard('task_number'))
+    task_total_number = int(redis_client.scard('emails_data'))
     # 开始时间
     start_time = datetime.strptime(redis_client.get('start_time'), '%Y-%m-%d %H:%M:%S')
     now_time = datetime.now()
