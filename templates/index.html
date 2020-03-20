@@ -1275,7 +1275,7 @@
                                                                     <i class="fa fa-circle text-warning fs8 pr15"></i>
                                                                     <span>6 位数QQ任务</span>
                                                                 </td>
-                                                                <td>0%</td>
+                                                                <td>100%</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>
@@ -1939,12 +1939,10 @@
         $('#task-total-time').text(data.task_total_time);
         $('#task-finish-time').text(data.task_finish_time);
         $('#task-spend-time').text(data.task_spend_time);
-        $('#finish-percent').text(data.finish_percent)
-    });
-    socket.on('success_status', function (data) {
+        $('#finish-percent').text(data.finish_percent);
         $('#filter-success').text(data.filter_success);
         $('#auth-account-percent').text(data.auth_account_percent);
-        $('#task-total-number').text( data.task_number)
+        $('#task-total-number').text( data.task_total_number);
     });
     socket.on('loading', function (data) {
         $('#load').text('载入进度:'+ data.percent)

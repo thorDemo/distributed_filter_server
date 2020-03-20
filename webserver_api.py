@@ -22,6 +22,39 @@ mission_number = int(config.get('EMAIL', 'mission_count'))
 
 @app.route('/', methods=['GET'])
 def filter_index():
+    # 前台控制面板
+    # 已完成总量
+    filter_finish = int(redis_client.get('task_number')) - int(redis_client.scard('emails_data'))
+    # 任务总量
+    task_total_number = int(redis_client.get('task_number'))
+    # 开始时间
+    start_time = datetime.strptime(redis_client.get('start_time'), '%Y-%m-%d %H:%M:%S')
+    now_time = datetime.now()
+    # 任务耗时
+    task_spend_time = str(now_time - start_time)
+    task_spend_seconds = int((now_time - start_time).seconds)
+    # 任务速度
+    filter_speed = filter_finish / task_spend_seconds
+    task_total_time_seconds = task_total_number / filter_speed
+    m, s = divmod(task_total_time_seconds, 60)
+    h, m = divmod(m, 60)
+    task_total_time = "%dH %02dmin" % (h, m)
+    task_finish_time_obj = datetime.now() + timedelta(seconds=task_total_time_seconds)
+    task_finish_time = task_finish_time_obj.strftime('%Y-%m-%d %H:%M:%S')
+    finish_percent = filter_finish / int(redis_client.get('total_line_number'))
+    filter_success = int(redis_client.scard('success_data'))
+    auth_account_percent = filter_success / filter_finish
+    socket.emit('filter_status', {
+        'filter_speed': '%.2f/sec' % filter_speed,
+        'filter_finish': filter_finish,
+        'task_total_number': task_total_number,
+        'task_total_time': task_total_time,
+        'task_spend_time': task_spend_time,
+        'task_finish_time': task_finish_time,
+        'finish_percent': '%.2f%%' % (finish_percent * 100),
+        'filter_success': filter_success,
+        'auth_account_percent': '%.2f%%' % (auth_account_percent * 100),
+    })
     return render_template(
         'index.html',
     )
@@ -105,9 +138,6 @@ def load_random_data():
     socket.emit(event='task_number', data={'task_number': redis_client.scard('emails_data')})
     redis_client.set('start_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     redis_client.set('task_number', redis_client.scard('emails_data'))
-    redis_client.set('filter_number', 0)
-    redis_client.set('success_number', 0)
-    redis_client.set('total_line_number', 1000000)
     return jsonify({
         'status': 'success',
         'count': temp
@@ -119,26 +149,26 @@ def result_handler():
     data = request.get_data()
     json_data = json.loads(data.decode("utf-8"))
     emails = json_data.get('emails')
-    result = open('result.txt', 'a+', encoding='utf-8')
+    result = open('results.txt', 'a+', encoding='utf-8')
     for line in emails:
         result.write(line + '\n')
     result.close()
-
-    return jsonify({'status': 'success'})
-
-
-@app.route('/filter_number/', methods=['GET'])
-def filter_dashboard():
-    # 每过滤100 返回一次
-    filter_number = int(redis_client.get('filter_number')) + 1
-    redis_client.set('filter_number', filter_number)
+    with redis_client.pipeline(transaction=False) as p:
+        for d in emails:
+            p.sadd('success_data', d)
+        p.execute()
     # 前台控制面板
-    filter_finish = filter_number * 100
+    # 已完成总量
+    filter_finish = int(redis_client.get('task_number')) - int(redis_client.scard('emails_data'))
+    # 任务总量
     task_total_number = int(redis_client.get('task_number'))
+    # 开始时间
     start_time = datetime.strptime(redis_client.get('start_time'), '%Y-%m-%d %H:%M:%S')
     now_time = datetime.now()
+    # 任务耗时
     task_spend_time = str(now_time - start_time)
     task_spend_seconds = int((now_time - start_time).seconds)
+    # 任务速度
     filter_speed = filter_finish / task_spend_seconds
     task_total_time_seconds = task_total_number / filter_speed
     m, s = divmod(task_total_time_seconds, 60)
@@ -147,7 +177,8 @@ def filter_dashboard():
     task_finish_time_obj = datetime.now() + timedelta(seconds=task_total_time_seconds)
     task_finish_time = task_finish_time_obj.strftime('%Y-%m-%d %H:%M:%S')
     finish_percent = filter_finish / int(redis_client.get('total_line_number'))
-
+    filter_success = int(redis_client.scard('success_data'))
+    auth_account_percent = filter_success / filter_finish
     socket.emit('filter_status', {
         'filter_speed': '%.2f/sec' % filter_speed,
         'filter_finish': filter_finish,
@@ -155,27 +186,61 @@ def filter_dashboard():
         'task_total_time': task_total_time,
         'task_spend_time': task_spend_time,
         'task_finish_time': task_finish_time,
-        'finish_percent': '%.2f%%' % (finish_percent * 100)
-    })
-    return jsonify({'status': 200})
-
-
-@app.route('/success_number/', methods=['GET'])
-def success_dashboard():
-    # 每过滤100 返回一次
-    success_number = int(redis_client.get('success_number')) + 1
-    redis_client.set('success_number', success_number)
-    # 前台控制面板
-    filter_success = success_number * 100
-    filter_number = int(redis_client.get('filter_number'))
-    auth_account_percent = filter_success / (filter_number * 100)
-    task_number = redis_client.scard('emails_data')
-    socket.emit('success_status', {
+        'finish_percent': '%.2f%%' % (finish_percent * 100),
         'filter_success': filter_success,
         'auth_account_percent': '%.2f%%' % (auth_account_percent * 100),
-        'task_number': task_number,
     })
-    return jsonify({'status': 200})
+    return jsonify({'status': 'success'})
+
+# @app.route('/filter_number/', methods=['GET'])
+# def filter_dashboard():
+#     # 每过滤100 返回一次
+#     filter_number = int(redis_client.get('filter_number')) + 1
+#     redis_client.set('filter_number', filter_number)
+#     # 前台控制面板
+#     filter_finish = filter_number * 100
+#     task_total_number = int(redis_client.get('task_number'))
+#     start_time = datetime.strptime(redis_client.get('start_time'), '%Y-%m-%d %H:%M:%S')
+#     now_time = datetime.now()
+#     task_spend_time = str(now_time - start_time)
+#     task_spend_seconds = int((now_time - start_time).seconds)
+#     filter_speed = filter_finish / task_spend_seconds
+#     task_total_time_seconds = task_total_number / filter_speed
+#     m, s = divmod(task_total_time_seconds, 60)
+#     h, m = divmod(m, 60)
+#     task_total_time = "%dH %02dmin" % (h, m)
+#     task_finish_time_obj = datetime.now() + timedelta(seconds=task_total_time_seconds)
+#     task_finish_time = task_finish_time_obj.strftime('%Y-%m-%d %H:%M:%S')
+#     finish_percent = filter_finish / int(redis_client.get('total_line_number'))
+#
+#     socket.emit('filter_status', {
+#         'filter_speed': '%.2f/sec' % filter_speed,
+#         'filter_finish': filter_finish,
+#         'task_total_number': task_total_number,
+#         'task_total_time': task_total_time,
+#         'task_spend_time': task_spend_time,
+#         'task_finish_time': task_finish_time,
+#         'finish_percent': '%.2f%%' % (finish_percent * 100)
+#     })
+#     return jsonify({'status': 200})
+#
+#
+# @app.route('/success_number/', methods=['GET'])
+# def success_dashboard():
+#     # 每过滤100 返回一次
+#     success_number = int(redis_client.get('success_number')) + 1
+#     redis_client.set('success_number', success_number)
+#     # 前台控制面板
+#     filter_success = success_number * 100
+#     filter_number = int(redis_client.get('filter_number'))
+#     auth_account_percent = filter_success / (filter_number * 100)
+#     task_number = redis_client.scard('emails_data')
+#     socket.emit('success_status', {
+#         'filter_success': filter_success,
+#         'auth_account_percent': '%.2f%%' % (auth_account_percent * 100),
+#         'task_number': task_number,
+#     })
+#     return jsonify({'status': 200})
 
 
 def count_file_lines(filename):
