@@ -37,11 +37,12 @@ def filter_index():
     filter_speed = filter_finish / task_spend_seconds
     if filter_speed == 0:
         task_total_time_seconds = 'NAV'
+        task_total_time = "NAV"
     else:
         task_total_time_seconds = task_total_number / filter_speed
-    m, s = divmod(task_total_time_seconds, 60)
-    h, m = divmod(m, 60)
-    task_total_time = "%dH %02dmin" % (h, m)
+        m, s = divmod(task_total_time_seconds, 60)
+        h, m = divmod(m, 60)
+        task_total_time = "%dH %02dmin" % (h, m)
     task_finish_time_obj = datetime.now() + timedelta(seconds=task_total_time_seconds)
     task_finish_time = task_finish_time_obj.strftime('%Y-%m-%d %H:%M:%S')
     finish_percent = filter_finish / int(redis_client.get('total_line_number'))
