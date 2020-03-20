@@ -1120,7 +1120,7 @@
 {#            </div>#}
             <div class="topbar-left" style="width: 200px; float: left; height: 31px">
                 <div class="">
-                    <button type="button" class="btn btn-success btn-gradient dark btn-block" onclick="load_random_data_six_qq()" id="load">载入QQ数据</button>
+                    <button type="button" class="btn btn-success btn-gradient dark btn-block" onclick="load_random_data_seven_qq()" id="load">载入QQ数据</button>
                 </div>
             </div>
             <div class="topbar-right">
@@ -1972,12 +1972,12 @@
             }
         })
     }
-    function load_random_data_six_qq() {
+    function load_random_data_seven_qq() {
         var l = $('#load');
         l.removeClass('btn-success');
         l.addClass('btn-warning');
         $.ajax({
-            'url': '/load_random_data_six_qq/',
+            'url': '/load_random_data_seven_qq/',
             success: function (data) {
                 $('#task-total-number').text(data['task_total_number']);
                 l.text('载入QQ成功');

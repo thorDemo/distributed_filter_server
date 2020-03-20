@@ -76,15 +76,15 @@ def loading():
     })
 
 
-@app.route('/load_random_data_six_qq/')
+@app.route('/load_random_data_seven_qq/')
 def load_random_data():
-    percent_number = 1000
+    percent_number = 10000
     redis_client.flushall()
     socket.emit(event='loading', data={'percent': 0})
     temp = 0
     percent = 0
     temp_data = []
-    for line in range(100000, 1000000):
+    for line in range(1000000, 10000000):
         temp_data.append(str(line) + '@qq.com')
         if temp % percent_number == 0:
             with redis_client.pipeline(transaction=False) as p:
