@@ -36,8 +36,18 @@ def filter_index():
     # 任务速度
     filter_speed = filter_finish / task_spend_seconds
     if filter_speed == 0:
-        task_total_time = "NAV"
-        task_finish_time = "NAV"
+        return render_template(
+            'index.html',
+            filter_speed='%.2f/sec' % filter_speed,
+            filter_finish=filter_finish,
+            task_total_number=task_total_number,
+            task_total_time='Null',
+            task_spend_time='Null',
+            task_finish_time='Null',
+            finish_percent='0.00%',
+            filter_success=0,
+            auth_account_percent=0,
+        )
     else:
         task_total_time_seconds = task_total_number / filter_speed
         m, s = divmod(task_total_time_seconds, 60)
@@ -45,21 +55,21 @@ def filter_index():
         task_total_time = "%dH %02dmin" % (h, m)
         task_finish_time_obj = datetime.now() + timedelta(seconds=task_total_time_seconds)
         task_finish_time = task_finish_time_obj.strftime('%Y-%m-%d %H:%M:%S')
-    finish_percent = filter_finish / int(redis_client.get('task_number'))
-    filter_success = int(redis_client.scard('success_data'))
-    auth_account_percent = filter_success / filter_finish
-    return render_template(
-        'index.html',
-        filter_speed='%.2f/sec' % filter_speed,
-        filter_finish=filter_finish,
-        task_total_number=task_total_number,
-        task_total_time=task_total_time,
-        task_spend_time=task_spend_time,
-        task_finish_time=task_finish_time,
-        finish_percent='%.2f%%' % (finish_percent * 100),
-        filter_success=filter_success,
-        auth_account_percent='%.2f%%' % (auth_account_percent * 100),
-    )
+        finish_percent = filter_finish / int(redis_client.get('task_number'))
+        filter_success = int(redis_client.scard('success_data'))
+        auth_account_percent = filter_success / filter_finish
+        return render_template(
+            'index.html',
+            filter_speed='%.2f/sec' % filter_speed,
+            filter_finish=filter_finish,
+            task_total_number=task_total_number,
+            task_total_time=task_total_time,
+            task_spend_time=task_spend_time,
+            task_finish_time=task_finish_time,
+            finish_percent='%.2f%%' % (finish_percent * 100),
+            filter_success=filter_success,
+            auth_account_percent='%.2f%%' % (auth_account_percent * 100),
+        )
 
 
 @app.route('/filter/', methods=['GET'])
