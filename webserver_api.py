@@ -44,19 +44,17 @@ def filter_index():
     finish_percent = filter_finish / int(redis_client.get('total_line_number'))
     filter_success = int(redis_client.scard('success_data'))
     auth_account_percent = filter_success / filter_finish
-    socket.emit('filter_status', {
-        'filter_speed': '%.2f/sec' % filter_speed,
-        'filter_finish': filter_finish,
-        'task_total_number': task_total_number,
-        'task_total_time': task_total_time,
-        'task_spend_time': task_spend_time,
-        'task_finish_time': task_finish_time,
-        'finish_percent': '%.2f%%' % (finish_percent * 100),
-        'filter_success': filter_success,
-        'auth_account_percent': '%.2f%%' % (auth_account_percent * 100),
-    })
     return render_template(
         'index.html',
+        filter_speed='%.2f/sec' % filter_speed,
+        filter_finish=filter_finish,
+        task_total_number=task_total_number,
+        task_total_time=task_total_time,
+        task_spend_time=task_spend_time,
+        task_finish_time=task_finish_time,
+        finish_percent='%.2f%%' % (finish_percent * 100),
+        filter_success=filter_success,
+        auth_account_percent='%.2f%%' % (auth_account_percent * 100),
     )
 
 

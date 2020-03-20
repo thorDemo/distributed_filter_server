@@ -1154,13 +1154,13 @@
                     <div class="col-sm-4 col-xl-3">
                         <div class="panel panel-tile text-center br-a br-grey">
                             <div class="panel-body">
-                                <h1 class="fs30 mt5 mbn" id="filter-speed">0</h1>
+                                <h1 class="fs30 mt5 mbn" id="filter-speed">{{ filter_speed }}</h1>
                                 <h6 class="text-system">过滤速度</h6>
                             </div>
                             <div class="panel-footer br-t p12">
                                   <span class="fs11">
                                     <i class="fa fa-arrow-up pr5"></i> 预计总耗时
-                                    <b id="task-total-time">Null</b>
+                                    <b id="task-total-time">{{ task_total_time }}</b>
                                   </span>
                             </div>
                         </div>
@@ -1168,13 +1168,13 @@
                     <div class="col-sm-4 col-xl-3">
                         <div class="panel panel-tile text-center br-a br-grey">
                             <div class="panel-body">
-                                <h1 class="fs30 mt5 mbn" id="filter-finish">0</h1>
+                                <h1 class="fs30 mt5 mbn" id="filter-finish">{{ filter_finish }}</h1>
                                 <h6 class="text-success">已过滤</h6>
                             </div>
                             <div class="panel-footer br-t p12">
                                 <span class="fs11">
                                     <i class="fa fa-arrow-up pr5"></i> 任务已开始
-                                    <b id="task-spend-time">Null</b>
+                                    <b id="task-spend-time">{{ task_spend_time }}</b>
                                 </span>
                             </div>
                         </div>
@@ -1182,13 +1182,13 @@
                     <div class="col-sm-4 col-xl-3">
                         <div class="panel panel-tile text-center br-a br-grey">
                             <div class="panel-body">
-                                <h1 class="fs30 mt5 mbn" id="filter-success">0</h1>
+                                <h1 class="fs30 mt5 mbn" id="filter-success">{{ filter_success }}</h1>
                                 <h6 class="text-warning">成功数量</h6>
                             </div>
                             <div class="panel-footer br-t p12">
                   <span class="fs11">
                     <i class="fa fa-arrow-up pr5 text-success"></i> 过滤任务总量
-                    <b id="task-total-number">Null</b>
+                    <b id="task-total-number">{{ task_total_number }}</b>
                   </span>
                             </div>
                         </div>
@@ -1196,13 +1196,13 @@
                     <div class="col-sm-3 col-xl-3 visible-xl">
                         <div class="panel panel-tile text-center br-a br-grey">
                             <div class="panel-body">
-                                <h1 class="fs30 mt5 mbn" id="auth-account-percent">Null</h1>
+                                <h1 class="fs30 mt5 mbn" id="auth-account-percent">{{ auth_account_percent }}</h1>
                                 <h6 class="text-danger">有效账户比例</h6>
                             </div>
                             <div class="panel-footer br-t p12">
                   <span class="fs11">
                     <i class="fa fa-arrow-up pr5 text-danger"></i> 预计完成时间
-                    <b id="task-finish-time">Null</b>
+                    <b id="task-finish-time">{{ task_finish_time }}</b>
                   </span>
                             </div>
                         </div>
