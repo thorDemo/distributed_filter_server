@@ -188,7 +188,7 @@ def result_handler():
     task_total_time = "%dH %02dmin" % (h, m)
     task_finish_time_obj = datetime.now() + timedelta(seconds=task_total_time_seconds)
     task_finish_time = task_finish_time_obj.strftime('%Y-%m-%d %H:%M:%S')
-    finish_percent = filter_finish / int(redis_client.get('total_line_number'))
+    finish_percent = filter_finish / int(redis_client.get('task_number'))
     filter_success = int(redis_client.scard('success_data'))
     auth_account_percent = filter_success / filter_finish
     socket.emit('filter_status', {
