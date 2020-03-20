@@ -35,7 +35,10 @@ def filter_index():
     task_spend_seconds = int((now_time - start_time).seconds)
     # 任务速度
     filter_speed = filter_finish / task_spend_seconds
-    task_total_time_seconds = task_total_number / filter_speed
+    if filter_speed == 0:
+        task_total_time_seconds = 'NAV'
+    else:
+        task_total_time_seconds = task_total_number / filter_speed
     m, s = divmod(task_total_time_seconds, 60)
     h, m = divmod(m, 60)
     task_total_time = "%dH %02dmin" % (h, m)
